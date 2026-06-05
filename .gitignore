@@ -11,6 +11,12 @@ bld/
 [Oo]bj/
 [Ll]og/
 [Ll]ogs/
+PmsSystem/[Bb]in/
+PmsSystem/[Oo]bj/
+PmsApi/[Bb]in/
+PmsApi/[Oo]bj/
+PmsWeb/node_modules/
+PmsWeb/dist/
 
 # Visual Studio cache/options directory
 .vs/
