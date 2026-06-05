@@ -1,60 +1,126 @@
-# PMS-Y-NETIM- (Property Management System)
+# SOM-PMS - Property Management System 🎯
 
-Bu proje, kapsamlı bir pansiy/Mülk Yönetim Sistemi (Property Management System) olarak tasarlanmıştır. Modern .NET teknolojileri kullanılarak geliştirilmiş, kullanıcı dostu ve işlevsel bir masaüstü uygulamasıdır.
+Kapsamlı bir pansiyon/otel/mülk yönetim sistemi! Hem masaüstü hem de web/API desteği ile tüm operasyonlarınızı tek bir merkezden yönetin.
 
-## 🚀 Proje Hakkında (Açıklama)
+---
 
-PMS-Y-NETIM, otel sahiplerinin veya mülk yöneticilerinin operasyonlarını tek bir merkezden yönetmelerini sağlar. Müşteri kayıtlarından oda rezervasyonlarına, depo takibinden ödeme işlemlerine kadar geniş bir yelpazede hizmet sunar.
+## 📌 Proje Hakkında
 
-### 🛠️ Ne Amaçla Kullanılır?
-- **Müşteri Yönetimi:** Müşterilerin bilgilerini kaydetmek, güncellemek ve geçmiş işlemlerini takip etmek için.
-- **Oda & Rezervasyon:** Odaların durumunu (dolu/boş) izlemek, yeni rezervasyonlar oluşturmak ve oda tiplerini yönetmek için.
-- **Depo (Storage) Takibi:** Otel envanterindeki ürünlerin miktarını ve stok durumunu kontrol etmek için.
-- **Kat & Yatak Planlaması:** Kat düzenleri ve oda içi yatak kapasitelerini özelleştirmek için.
-- **Güvenlik:** Yetkilendirilmiş giriş ve kayıt sistemleri (AuthHelper) ile verilerin güvenliğini sağlamak için.
+SOM-PMS, otel, pansiyon ve küçük ölçekli işletmeler için tasarlanmış modern bir mülk yönetim sistemidir. Müşteri yönetimi, oda rezervasyonları, stok takibi, raporlama ve daha birçok özelliğiyle işletmenizi kolayca yönetmenizi sağlar.
 
-## 💻 Kullanılan Teknolojiler
+### 🛠️ Kullanılan Teknolojiler
 
-- **Dil:** C#
-- **Framework:** .NET 8.0-Windows (WinForms)
-- **Veritabanı:** MySQL (`MySql.Data` kütüphanesi ile)
-- **Mimari:** Katmanlı Mimari (Models, Forms, Database, Helpers)
-- **IDE:** Visual Studio 2022
+| Bileşen | Teknoloji |
+|---------|-----------|
+| Masaüstü Uygulaması | .NET 8.0 WinForms (C#) |
+| API & Web | ASP.NET Core 8.0 Web API |
+| Veritabanı | MySQL |
+| Raporlama | QuestPDF |
+| Grafikler | ScottPlot |
+| E-Posta | SMTP |
 
-## 📦 Proje Yapısı
+---
 
-- **Models:** Veri modelleri (Customer, Room, Reservation, User, vb.)
-- **Forms:** Kullanıcı arayüz ekranları (Dashboard, Login, Register)
-- **Database:** Veritabanı bağlantı ve veri erişim sınıfları (DataAccess)
-- **Helpers:** Yardımcı araçlar ve yetkilendirme mantığı (AuthHelper)
-- **images:** Mimari şemalar ve ekran görüntüleri
+## ✨ Özellikler
 
-## 🖼️ Ekran Görüntüleri ve Şemalar
+### 🏢 Masaüstü Uygulaması Özellikleri (PmsSystem)
+- [x] Kullanıcı Girişi & Kaydı
+- [x] Müşteri Yönetimi (Ekle, Sil, Güncelle)
+- [x] Oda Yönetimi (Durum, Tip, Fiyat)
+- [x] Rezervasyon Yönetimi (Oluştur, Güncelle, İptal)
+- [x] Yatak & Kat Planlaması
+- [x] Stok & Depo Takibi
+- [x] Ödeme İşlemleri
+- [x] Fatura & Dekont Oluşturma
+- [x] Raporlama (Günlük, Aylık)
+- [x] Grafiksel Veri Görselleştirme
+- [x] E-Posta Bildirimleri
+- [x] Veritabanı Yedekleme & Geri Yükleme
 
-Projeye ait bazı görseller şu şekildedir:
+### 🌐 API & Web Özellikleri (PmsApi)
+- [x] RESTful API
+- [x] JWT Kimlik Doğrulama
+- [x] Çapraz Kaynak Paylaşımı (CORS) Desteği
+- [x] Online Rezervasyon Oluşturma
+- [x] Müşteri API'sı
+- [x] Swagger Dokümantasyonu
+- [x] Responsive Web Arayüzü
 
-### Veritabanı Şeması
-![Veritabanı](images/veritabtablu.jpeg)
+---
 
-### Mimari Yapı
-![Mimari](images/architecture.png)
+## 📂 Proje Yapısı
 
-### Dashboard (Panel)
-![Dashboard](images/dashboard.png)
+```
+📦 SOM-PMS
+├── 📁 PmsSystem/           # WinForms Masaüstü Uygulaması
+│   ├── 📁 Components/      # Özel Kontroller
+│   ├── 📁 Database/        # Veritabanı İşlemleri
+│   ├── 📁 Forms/           # Arayüz Ekranları
+│   ├── 📁 Helpers/         # Yardımcı Sınıflar
+│   └── 📁 Models/          # Veri Modelleri
+├── 📁 PmsApi/              # ASP.NET Core Web API
+│   ├── 📁 Controllers/     # API Kontrolleri
+│   ├── 📁 Database/        # Veritabanı Yardımcıları
+│   ├── 📁 Helpers/         # Yardımcı Sınıflar
+│   └── 📁 Models/          # API Modelleri
+├── 📁 PmsWeb/              # Vite + React Web Arayüzü (İsteğe Bağlı)
+└── 📄 README.md            # Bu Dosya
+```
 
-### Rezervasyon Ekranı
-![Reservation](images/reservation.png)
+---
 
-## 🔧 Kurulum ve Çalıştırma
+## 🚀 Kurulum & Çalıştırma
 
-1. Projeyi bilgisayarınıza klonlayın:
-   ```bash
-   git clone https://github.com/AHMETfarah22/PMS-Y-NETIM-.git
-   ```
-2. **Visual Studio** ile `.sln` dosyasını açın.
-3. Bağımlılıkları geri yükleyin (NuGet paketleri otomatik yüklenecektir).
-4. `DataAccess.cs` veya yapılandırma dosyasındaki MySQL bağlantı dizesini (Connection String) kendi veritabanı ayarlarınıza göre güncelleyin.
-5. Projeyi **Derleyin (Build)** ve **Çalıştırın (Run)**.
+### 1️⃣ Gereksinimler
+- .NET 8.0 SDK
+- MySQL Server
+- Visual Studio 2022 (veya VS Code)
 
-## 👥 Yazar
-Bu proje **AHMETfarah22** tarafından geliştirilmektedir.
+### 2️⃣ Adımlar
+
+#### Adım 1: Depoyu Klonlayın
+```bash
+git clone https://github.com/AHMETfarah22/PMS-Y-NETIM-.git
+cd PMS-Y-NETIM-
+```
+
+#### Adım 2: Veritabanı Kurulumu
+1. MySQL'de `pms_system` adında bir veritabanı oluşturun
+2. `pms_system.sql` dosyasını içe aktarın (veya uygulama ilk çalıştığında otomatik olarak oluşturulacaktır)
+
+#### Adım 3: Yapılandırma
+Her iki proje için `appsettings.json` dosyalarını oluşturun:
+- `PmsSystem/appsettings.json` → `PmsSystem/appsettings.example.json` dosyasını kopyalayıp doldurun
+- `PmsApi/appsettings.json` → `PmsApi/appsettings.example.json` dosyasını kopyalayıp doldurun
+
+#### Adım 4: Çalıştırma
+
+**Masaüstü Uygulamasını Çalıştırın:**
+```bash
+cd PmsSystem
+dotnet run
+```
+
+**API'yi Çalıştırın:**
+```bash
+cd PmsApi
+dotnet run
+```
+API tarayıcınızda `https://localhost:5001/swagger` adresinden erişilebilir.
+
+---
+
+## 🔒 Güvenlik Notları
+- Gerçek şifre ve API anahtarlarınızı `appsettings.json` dosyasına kaydedin
+- `appsettings.json` dosyası `.gitignore` ile takip edilmiyor, güvenliğiniz için örnek dosyasını kullanın
+- JWT anahtarınızı güçlü ve benzersiz bir şifre olarak ayarlayın
+
+---
+
+## 📧 İletişim
+Proje sahibi: **AHMETfarah22**
+
+---
+
+## 📄 Lisans
+Bu proje eğitim amaçlı geliştirilmiştir.
