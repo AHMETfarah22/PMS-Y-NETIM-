@@ -255,3 +255,6 @@ appsettings.*.json
 .env
 .env.local
 .env.*.local
+
+# Pre-built binaries
+PMS_Hazir_Proje/
