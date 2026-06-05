@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.8" />
+    <PackageReference Include="MySql.Data" Version="9.7.0" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="10.1.7" />
+  </ItemGroup>
+
+  <Target Name="CopyPmsWebDistToWwwroot" AfterTargets="Build" Condition="Exists('..\PmsWeb\dist')">
+    <ItemGroup>
+      <PmsWebDistFiles Include="..\PmsWeb\dist\**\*.*" />
+    </ItemGroup>
+    <Copy
+      SourceFiles="@(PmsWebDistFiles)"
+      DestinationFiles="@(PmsWebDistFiles->'wwwroot\%(RecursiveDir)%(Filename)%(Extension)')"
+      SkipUnchangedFiles="true" />
+  </Target>
+
+</Project>

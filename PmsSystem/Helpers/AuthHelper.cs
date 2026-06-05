@@ -1,24 +1,41 @@
 using MySql.Data.MySqlClient;
 using PmsSystem.Database;
 using PmsSystem.Models;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace PmsSystem.Helpers
 {
-    public static class AuthHelper //veritabanı ile formlar arasındaki iletişimi, SQL sorgularını ve oturum yönetimini (Session) üstlenir.
+    public static class AuthHelper
     {
         public static User? CurrentUser { get; private set; }
+
+        public static string HashPassword(string password)
+        {
+            using (SHA256 sha256 = SHA256.Create())
+            {
+                byte[] bytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(password));
+                StringBuilder builder = new StringBuilder();
+                for (int i = 0; i < bytes.Length; i++)
+                {
+                    builder.Append(bytes[i].ToString("x2"));
+                }
+                return builder.ToString();
+            }
+        }
 
         public static bool Login(string username, string password, out string message)
         {
             try
             {
+                string hashedInput = HashPassword(password.Trim());
                 using (var conn = DatabaseHelper.GetConnection())
                 {
                     conn.Open();
                     var cmd = new MySqlCommand(
                         "SELECT * FROM USERS WHERE Username=@u AND PasswordHash=@p AND IsActive=1", conn);
-                    cmd.Parameters.AddWithValue("@u", username);
-                    cmd.Parameters.AddWithValue("@p", password);
+                    cmd.Parameters.AddWithValue("@u", username.Trim());
+                    cmd.Parameters.AddWithValue("@p", hashedInput);
 
                     using (var reader = cmd.ExecuteReader())
                     {
@@ -52,6 +69,7 @@ namespace PmsSystem.Helpers
         {
             try
             {
+                string hashedPass = HashPassword(password);
                 using (var conn = DatabaseHelper.GetConnection())
                 {
                     conn.Open();
@@ -61,7 +79,7 @@ namespace PmsSystem.Helpers
                     cmd.Parameters.AddWithValue("@u", username);
                     cmd.Parameters.AddWithValue("@n", fullName);
                     cmd.Parameters.AddWithValue("@e", email);
-                    cmd.Parameters.AddWithValue("@p", password);
+                    cmd.Parameters.AddWithValue("@p", hashedPass);
                     cmd.Parameters.AddWithValue("@ph", phone);
 
                     int rows = cmd.ExecuteNonQuery();
@@ -76,6 +94,18 @@ namespace PmsSystem.Helpers
                     : "Hata: " + ex.Message;
                 return false;
             }
+        }
+
+        public static void SetTestUser(string username, string fullName, string role)
+        {
+            CurrentUser = new User
+            {
+                UserID = 0,
+                Username = username,
+                FullName = fullName,
+                Email = "",
+                Role = role
+            };
         }
 
         public static void Logout() => CurrentUser = null;

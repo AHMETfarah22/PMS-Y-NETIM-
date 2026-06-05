@@ -1,6 +1,6 @@
 # PMS-Y-NETIM- (Property Management System)
 
-Bu proje, kapsamlı bir Otel/Mülk Yönetim Sistemi (Property Management System) olarak tasarlanmıştır. Modern .NET teknolojileri kullanılarak geliştirilmiş, kullanıcı dostu ve işlevsel bir masaüstü uygulamasıdır.
+Bu proje, kapsamlı bir pansiy/Mülk Yönetim Sistemi (Property Management System) olarak tasarlanmıştır. Modern .NET teknolojileri kullanılarak geliştirilmiş, kullanıcı dostu ve işlevsel bir masaüstü uygulamasıdır.
 
 ## 🚀 Proje Hakkında (Açıklama)
 

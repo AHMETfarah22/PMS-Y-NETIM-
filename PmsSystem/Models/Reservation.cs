@@ -7,7 +7,7 @@ namespace PmsSystem.Models
         public int RoomID { get; set; }
         public DateTime CheckInDate { get; set; }
         public DateTime CheckOutDate { get; set; }
-        public string Status { get; set; } = "Pending"; // Pending, CheckedIn, CheckedOut, Cancelled
+        public string Status { get; set; } = "Pending"; // Pending, CheckedIn, CheckedOut, Cancelled, NoShow
         public decimal TotalAmount { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.Now;
     }

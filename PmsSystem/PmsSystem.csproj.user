@@ -1,6 +1,15 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
+    <Compile Update="Components\OnlineReservationsControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="Components\RoundedPanel.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Update="Forms\DailyReportForm.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Update="Forms\DashboardForm.cs">
       <SubType>Form</SubType>
     </Compile>

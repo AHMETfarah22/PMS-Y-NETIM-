@@ -1,4 +1,6 @@
-using System.Drawing.Drawing2D;
+using System;
+using System.Drawing;
+using System.Windows.Forms;
 using PmsSystem.Helpers;
 
 namespace PmsSystem.Forms
@@ -23,55 +25,77 @@ namespace PmsSystem.Forms
             this.MaximizeBox = false;
             this.BackColor = Color.FromArgb(20, 32, 68);
 
-            int y = 20;
+            TableLayoutPanel tlpMain = new TableLayoutPanel
+            {
+                Dock = DockStyle.Fill,
+                ColumnCount = 1,
+                RowCount = 15,
+                Padding = new Padding(30, 20, 30, 20)
+            };
+            tlpMain.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100f));
+            this.Controls.Add(tlpMain);
 
             var lblTitle = new Label
             {
                 Text = "🏨 Yeni Hesap Oluştur",
                 Font = new Font("Segoe UI", 16, FontStyle.Bold),
                 ForeColor = Color.FromArgb(218, 165, 32),
-                AutoSize = false,
-                Size = new Size(440, 36),
-                Location = new Point(20, y),
-                TextAlign = ContentAlignment.MiddleCenter
+                AutoSize = true,
+                Dock = DockStyle.Fill,
+                TextAlign = ContentAlignment.MiddleCenter,
+                Margin = new Padding(0, 0, 0, 20)
             };
-            this.Controls.Add(lblTitle);
-            y += 55;
-           //ref y parametresi kullanılarak her alan eklendiğinde bir sonraki alanın konumu otomatik olarak hesaplanır.
-            txtFullName = AddField("👤  Ad Soyad *", ref y, false);
-            txtUsername = AddField("🔑  Kullanıcı Adı *", ref y, false);
-            txtEmail = AddField("📧  E-Posta", ref y, false);
-            txtPhone = AddField("📱  Telefon", ref y, false);
-            txtPassword = AddField("🔒  Şifre *", ref y, true);
-            txtConfirmPass = AddField("🔒  Şifre Tekrar *", ref y, true);
+            tlpMain.Controls.Add(lblTitle, 0, 0);
 
-            // Kayıt ol butonu
+            tlpMain.Controls.Add(CreateLabel("👤  Ad Soyad *"), 0, 1);
+            txtFullName = CreateTextBox(false);
+            tlpMain.Controls.Add(txtFullName, 0, 2);
+
+            tlpMain.Controls.Add(CreateLabel("🔑  Kullanıcı Adı *"), 0, 3);
+            txtUsername = CreateTextBox(false);
+            tlpMain.Controls.Add(txtUsername, 0, 4);
+
+            tlpMain.Controls.Add(CreateLabel("📧  E-Posta"), 0, 5);
+            txtEmail = CreateTextBox(false);
+            tlpMain.Controls.Add(txtEmail, 0, 6);
+
+            tlpMain.Controls.Add(CreateLabel("📱  Telefon"), 0, 7);
+            txtPhone = CreateTextBox(false);
+            tlpMain.Controls.Add(txtPhone, 0, 8);
+
+            tlpMain.Controls.Add(CreateLabel("🔒  Şifre *"), 0, 9);
+            txtPassword = CreateTextBox(true);
+            tlpMain.Controls.Add(txtPassword, 0, 10);
+
+            tlpMain.Controls.Add(CreateLabel("🔒  Şifre Tekrar *"), 0, 11);
+            txtConfirmPass = CreateTextBox(true);
+            tlpMain.Controls.Add(txtConfirmPass, 0, 12);
+
             btnRegister = new Button
             {
                 Text = "HESAP OLUŞTUR",
-                Size = new Size(440, 46),
-                Location = new Point(20, y + 10),
+                Dock = DockStyle.Fill,
+                Height = 45,
                 BackColor = Color.FromArgb(218, 165, 32),
                 ForeColor = Color.FromArgb(10, 18, 42),
                 FlatStyle = FlatStyle.Flat,
                 Font = new Font("Segoe UI", 12, FontStyle.Bold),
-                Cursor = Cursors.Hand
+                Cursor = Cursors.Hand,
+                Margin = new Padding(0, 10, 0, 10)
             };
             btnRegister.FlatAppearance.BorderSize = 0;
-            this.Controls.Add(btnRegister);
-            y += 65;
+            tlpMain.Controls.Add(btnRegister, 0, 13);
 
             lblStatus = new Label
             {
                 Text = "",
                 Font = new Font("Segoe UI", 9),
                 ForeColor = Color.FromArgb(248, 113, 113),
-                AutoSize = false,
-                Size = new Size(440, 22),
-                Location = new Point(20, y + 10),
+                AutoSize = true,
+                Dock = DockStyle.Fill,
                 TextAlign = ContentAlignment.MiddleCenter
             };
-            this.Controls.Add(lblStatus);
+            tlpMain.Controls.Add(lblStatus, 0, 14);
 
             btnRegister.Click += BtnRegister_Click;
             btnRegister.MouseEnter += (s, e) => btnRegister.BackColor = Color.FromArgb(195, 145, 25);
@@ -79,31 +103,31 @@ namespace PmsSystem.Forms
             this.AcceptButton = btnRegister;
         }
 
-        private TextBox AddField(string labelText, ref int y, bool isPass)
+        private Label CreateLabel(string labelText)
         {
-            var lbl = new Label
+            return new Label
             {
                 Text = labelText,
                 Font = new Font("Segoe UI", 9),
                 ForeColor = Color.FromArgb(140, 160, 200),
                 AutoSize = true,
-                Location = new Point(22, y)
+                Margin = new Padding(0, 0, 0, 5)
             };
-            this.Controls.Add(lbl);
+        }
 
-            var txt = new TextBox
+        private TextBox CreateTextBox(bool isPass)
+        {
+            return new TextBox
             {
-                Size = new Size(440, 36),
-                Location = new Point(20, y + 20),
+                Dock = DockStyle.Fill,
+                Height = 36,
                 BackColor = Color.FromArgb(28, 44, 85),
                 ForeColor = Color.White,
                 BorderStyle = BorderStyle.FixedSingle,
                 Font = new Font("Segoe UI", 11),
-                PasswordChar = isPass ? '●' : '\0'
+                PasswordChar = isPass ? '●' : '\0',
+                Margin = new Padding(0, 0, 0, 10)
             };
-            this.Controls.Add(txt);
-            y += 70;
-            return txt;
         }
 
         private void BtnRegister_Click(object? sender, EventArgs e)
@@ -130,7 +154,6 @@ namespace PmsSystem.Forms
             }
 
             btnRegister.Enabled = false;
-            //metodu üzerinden veritabanına INSERT komutu gönderilir.AUTHelper
             if (AuthHelper.Register(user, name, email, pass, phone, out string msg))
             {
                 MessageBox.Show(msg, "Başarılı", MessageBoxButtons.OK, MessageBoxIcon.Information);

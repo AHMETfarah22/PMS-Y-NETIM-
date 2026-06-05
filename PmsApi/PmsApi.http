@@ -1,0 +1,6 @@
+@PmsApi_HostAddress = http://localhost:5262
+
+GET {{PmsApi_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

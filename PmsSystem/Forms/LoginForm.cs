@@ -1,17 +1,27 @@
+using System;
+using System.Drawing;
 using System.Drawing.Drawing2D;
+using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using System.Collections.Generic;
 using PmsSystem.Helpers;
+using PmsSystem.Components;
 
 namespace PmsSystem.Forms
 {
     public class LoginForm : Form
     {
         private Panel pnlMain;
-        private Panel pnlCard;
+        private RoundedPanel pnlCard;
         private Label lblTitle, lblSubtitle, lblStatus, lblRegisterLink, lblForgotPass;
         private TextBox txtUsername, txtPassword;
         private Button btnLogin, btnShowPass;
         private ComboBox cmbRole;
+        private CheckBox chkRemember;
         private bool passVisible = false;
+        private readonly string rememberPath = Path.Combine(Application.StartupPath, "remember.json");
 
         public LoginForm()
         {
@@ -38,55 +48,74 @@ namespace PmsSystem.Forms
             };
             this.Controls.Add(pnlMain);
 
-            // Kart
-            pnlCard = new Panel
+            // Kart - Responsive Center
+            pnlCard = new RoundedPanel
             {
                 Size = new Size(420, 520),
                 BackColor = Color.FromArgb(20, 32, 68),
-                Location = new Point((1000 - 420) / 2, (650 - 520) / 2)
+                BorderRadius = 24
             };
-            pnlCard.Paint += DrawCardBorder;
+            
+            // Auto center card
+            pnlMain.Resize += (s, e) => {
+                pnlCard.Location = new Point((pnlMain.Width - pnlCard.Width) / 2, (pnlMain.Height - pnlCard.Height) / 2);
+            };
+            pnlCard.Location = new Point((this.ClientSize.Width - pnlCard.Width) / 2, (this.ClientSize.Height - pnlCard.Height) / 2);
             pnlMain.Controls.Add(pnlCard);
+
+            TableLayoutPanel tlpCard = new TableLayoutPanel
+            {
+                Dock = DockStyle.Fill,
+                ColumnCount = 1,
+                RowCount = 12,
+                Padding = new Padding(30, 20, 30, 20)
+            };
+            tlpCard.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100f));
+            pnlCard.Controls.Add(tlpCard);
 
             // Başlık
             lblTitle = new Label
             {
                 Text = "🏨 PANSİYON YÖNETİM SİSTEMİ",
-                Font = new Font("Segoe UI", 20, FontStyle.Bold),
+                Font = new Font("Segoe UI", 16, FontStyle.Bold),
                 ForeColor = Color.FromArgb(218, 165, 32),
-                AutoSize = false,
-                Size = new Size(380, 40),
-                Location = new Point(20, 35),
-                TextAlign = ContentAlignment.MiddleCenter
+                AutoSize = true,
+                Dock = DockStyle.Fill,
+                TextAlign = ContentAlignment.MiddleCenter,
+                Margin = new Padding(0, 0, 0, 5)
             };
-            pnlCard.Controls.Add(lblTitle);
+            tlpCard.Controls.Add(lblTitle, 0, 0);
 
             lblSubtitle = new Label
             {
                 Text = "Pansiyon Yönetim Paneli",
                 Font = new Font("Segoe UI", 10),
                 ForeColor = Color.FromArgb(140, 160, 200),
-                AutoSize = false,
-                Size = new Size(380, 22),
-                Location = new Point(20, 78),
-                TextAlign = ContentAlignment.MiddleCenter
+                AutoSize = true,
+                Dock = DockStyle.Fill,
+                TextAlign = ContentAlignment.MiddleCenter,
+                Margin = new Padding(0, 0, 0, 20)
             };
-            pnlCard.Controls.Add(lblSubtitle);
+            tlpCard.Controls.Add(lblSubtitle, 0, 1);
 
             // Kullanıcı adı
-            AddLabel(pnlCard, "👤  Kullanıcı Adı", 125);
-            txtUsername = AddTextBox(pnlCard, "Kullanıcı adınızı giriniz", 150, false);
+            tlpCard.Controls.Add(CreateLabel("👤  Kullanıcı Adı"), 0, 2);
+            txtUsername = CreateTextBox("Kullanıcı adınızı giriniz", false);
+            tlpCard.Controls.Add(txtUsername, 0, 3);
 
             // Şifre
-            AddLabel(pnlCard, "🔒  Şifre", 215);
-            txtPassword = AddTextBox(pnlCard, "Şifrenizi giriniz", 240, true);
+            tlpCard.Controls.Add(CreateLabel("🔒  Şifre"), 0, 4);
+            
+            Panel pnlPass = new Panel { Dock = DockStyle.Fill, Height = 40, Margin = new Padding(0, 0, 0, 10) };
+            txtPassword = CreateTextBox("Şifrenizi giriniz", true);
+            txtPassword.Width = 300;
+            pnlPass.Controls.Add(txtPassword);
 
-            // Şifre göster butonu
             btnShowPass = new Button
             {
                 Text = "👁",
                 Size = new Size(36, 36),
-                Location = new Point(345, 238),
+                Location = new Point(310, 0),
                 FlatStyle = FlatStyle.Flat,
                 BackColor = Color.Transparent,
                 ForeColor = Color.White,
@@ -94,38 +123,53 @@ namespace PmsSystem.Forms
                 Font = new Font("Segoe UI", 12)
             };
             btnShowPass.FlatAppearance.BorderSize = 0;
-            pnlCard.Controls.Add(btnShowPass);
+            pnlPass.Controls.Add(btnShowPass);
+            tlpCard.Controls.Add(pnlPass, 0, 5);
 
             // Rol seçimi
-            AddLabel(pnlCard, "🎭  Rol", 300);
+            tlpCard.Controls.Add(CreateLabel("🎭  Rol"), 0, 6);
             cmbRole = new ComboBox
             {
-                Size = new Size(380, 40),
-                Location = new Point(20, 323),
+                Dock = DockStyle.Fill,
+                Height = 40,
                 DropDownStyle = ComboBoxStyle.DropDownList,
                 BackColor = Color.FromArgb(28, 44, 85),
                 ForeColor = Color.White,
                 FlatStyle = FlatStyle.Flat,
-                Font = new Font("Segoe UI", 11)
+                Font = new Font("Segoe UI", 11),
+                Margin = new Padding(0, 0, 0, 10)
             };
             cmbRole.Items.AddRange(new[] { "-- Rol Seçiniz --", "Admin", "Kasiyer" });
             cmbRole.SelectedIndex = 0;
-            pnlCard.Controls.Add(cmbRole);
+            tlpCard.Controls.Add(cmbRole, 0, 7);
+
+            // Beni hatırla
+            chkRemember = new CheckBox
+            {
+                Text = "Beni Hatırla",
+                ForeColor = Color.FromArgb(140, 160, 200),
+                Font = new Font("Segoe UI", 9),
+                AutoSize = true,
+                Cursor = Cursors.Hand,
+                Margin = new Padding(0, 0, 0, 15)
+            };
+            tlpCard.Controls.Add(chkRemember, 0, 8);
 
             // Giriş butonu
             btnLogin = new Button
             {
                 Text = "GİRİŞ YAP",
-                Size = new Size(380, 46),
-                Location = new Point(20, 382),
+                Dock = DockStyle.Fill,
+                Height = 45,
                 BackColor = Color.FromArgb(218, 165, 32),
                 ForeColor = Color.FromArgb(10, 18, 42),
                 FlatStyle = FlatStyle.Flat,
                 Font = new Font("Segoe UI", 12, FontStyle.Bold),
-                Cursor = Cursors.Hand
+                Cursor = Cursors.Hand,
+                Margin = new Padding(0, 0, 0, 10)
             };
             btnLogin.FlatAppearance.BorderSize = 0;
-            pnlCard.Controls.Add(btnLogin);
+            tlpCard.Controls.Add(btnLogin, 0, 9);
 
             // Durum etiketi
             lblStatus = new Label
@@ -133,24 +177,35 @@ namespace PmsSystem.Forms
                 Text = "",
                 Font = new Font("Segoe UI", 9),
                 ForeColor = Color.FromArgb(248, 113, 113),
-                AutoSize = false,
-                Size = new Size(380, 22),
-                Location = new Point(20, 435),
-                TextAlign = ContentAlignment.MiddleCenter
+                AutoSize = true,
+                Dock = DockStyle.Fill,
+                TextAlign = ContentAlignment.MiddleCenter,
+                Margin = new Padding(0, 0, 0, 10)
             };
-            pnlCard.Controls.Add(lblStatus);
+            tlpCard.Controls.Add(lblStatus, 0, 10);
 
             // Alt bağlantılar
+            TableLayoutPanel tlpLinks = new TableLayoutPanel
+            {
+                Dock = DockStyle.Fill,
+                ColumnCount = 2,
+                RowCount = 1,
+                Margin = new Padding(0)
+            };
+            tlpLinks.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50f));
+            tlpLinks.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50f));
+
             lblForgotPass = new Label
             {
                 Text = "Şifremi Unuttum",
                 Font = new Font("Segoe UI", 9, FontStyle.Underline),
                 ForeColor = Color.FromArgb(120, 140, 180),
                 AutoSize = true,
-                Location = new Point(20, 465),
+                Dock = DockStyle.Left,
+                TextAlign = ContentAlignment.MiddleLeft,
                 Cursor = Cursors.Hand
             };
-            pnlCard.Controls.Add(lblForgotPass);
+            tlpLinks.Controls.Add(lblForgotPass, 0, 0);
 
             lblRegisterLink = new Label
             {
@@ -158,56 +213,44 @@ namespace PmsSystem.Forms
                 Font = new Font("Segoe UI", 9, FontStyle.Bold),
                 ForeColor = Color.FromArgb(218, 165, 32),
                 AutoSize = true,
-                Location = new Point(270, 465),
+                Dock = DockStyle.Right,
+                TextAlign = ContentAlignment.MiddleRight,
                 Cursor = Cursors.Hand
             };
-            pnlCard.Controls.Add(lblRegisterLink);
+            tlpLinks.Controls.Add(lblRegisterLink, 1, 0);
+
+            tlpCard.Controls.Add(tlpLinks, 0, 11);
         }
 
-        private Label AddLabel(Panel parent, string text, int y)
+        private Label CreateLabel(string text)
         {
-            var lbl = new Label
+            return new Label
             {
                 Text = text,
                 Font = new Font("Segoe UI", 9),
                 ForeColor = Color.FromArgb(140, 160, 200),
                 AutoSize = true,
-                Location = new Point(22, y)
+                Margin = new Padding(0, 0, 0, 5)
             };
-            parent.Controls.Add(lbl);
-            return lbl;
         }
 
-        private TextBox AddTextBox(Panel parent, string placeholder, int y, bool isPass)
+        private TextBox CreateTextBox(string placeholder, bool isPass)
         {
-            var txt = new TextBox
+            return new TextBox
             {
-                Size = new Size(isPass ? 310 : 380, 36),
-                Location = new Point(20, y),
+                Dock = DockStyle.Fill,
+                Height = 36,
                 BackColor = Color.FromArgb(28, 44, 85),
                 ForeColor = Color.White,
                 BorderStyle = BorderStyle.FixedSingle,
                 Font = new Font("Segoe UI", 11),
-                PasswordChar = isPass ? '●' : '\0'
+                PasswordChar = isPass ? '●' : '\0',
+                Margin = new Padding(0, 0, 0, 15)
             };
-            parent.Controls.Add(txt);
-            return txt;
-        }
-
-        private void DrawCardBorder(object? sender, PaintEventArgs e)
-        {
-            var g = e.Graphics;
-            g.SmoothingMode = SmoothingMode.AntiAlias;
-            var rect = new Rectangle(0, 0, pnlCard.Width - 1, pnlCard.Height - 1);
-            using var pen = new Pen(Color.FromArgb(50, 75, 130), 2);
-            g.DrawRectangle(pen, rect);
-            using var gold = new Pen(Color.FromArgb(218, 165, 32), 2);
-            g.DrawLine(gold, 0, 0, pnlCard.Width, 0);
         }
 
         private void SetupEvents()
         {
-            // Load
             this.Load += (s, e) =>
             {
                 try
@@ -223,17 +266,29 @@ namespace PmsSystem.Forms
                     lblStatus.Text = "❌ DB Hata: " + ex.Message;
                 }
                 txtUsername.Focus();
+
+                if (File.Exists(rememberPath))
+                {
+                    try {
+                        var data = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, string>>(File.ReadAllText(rememberPath));
+                        if (data != null) {
+                            txtUsername.Text = data.GetValueOrDefault("u", "");
+                            string r = data.GetValueOrDefault("r", "");
+                            if (r == "Admin") cmbRole.SelectedIndex = 1;
+                            else if (r == "Kasiyer") cmbRole.SelectedIndex = 2;
+                            chkRemember.Checked = true;
+                            if (!string.IsNullOrEmpty(txtUsername.Text)) txtPassword.Focus();
+                        }
+                    } catch { }
+                }
             };
 
-            // Giriş
             btnLogin.Click += BtnLogin_Click;
             this.AcceptButton = btnLogin;
 
-            // Hover
             btnLogin.MouseEnter += (s, e) => btnLogin.BackColor = Color.FromArgb(195, 145, 25);
             btnLogin.MouseLeave += (s, e) => btnLogin.BackColor = Color.FromArgb(218, 165, 32);
 
-            // Şifre göster
             btnShowPass.Click += (s, e) =>
             {
                 passVisible = !passVisible;
@@ -241,15 +296,10 @@ namespace PmsSystem.Forms
                 btnShowPass.Text = passVisible ? "🙈" : "👁";
             };
 
-            // Kayıt
-            lblRegisterLink.Click += (s, e) =>
-            {
-                new RegisterForm().ShowDialog(this);
-            };
+            lblRegisterLink.Click += (s, e) => new RegisterForm().ShowDialog(this);
             lblRegisterLink.MouseEnter += (s, e) => lblRegisterLink.ForeColor = Color.White;
             lblRegisterLink.MouseLeave += (s, e) => lblRegisterLink.ForeColor = Color.FromArgb(218, 165, 32);
 
-            // Şifremi unuttum
             lblForgotPass.Click += (s, e) =>
                 MessageBox.Show("Şifre sıfırlama için sistem yöneticinize başvurunuz.",
                     "Şifremi Unuttum", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -277,18 +327,25 @@ namespace PmsSystem.Forms
             btnLogin.Enabled = false;
             btnLogin.Text = "⏳ GİRİŞ...";
             Application.DoEvents();
-           //metodu çağrılarak veritabanı sorgusu yapılır.
-            if (AuthHelper.Login(user, pass, out string msg))
+             if (AuthHelper.Login(user, pass, out string msg))
             {
                 lblStatus.ForeColor = Color.FromArgb(74, 222, 128);
                 lblStatus.Text = "✅ " + msg;
                 Application.DoEvents();
+
+                if (chkRemember.Checked) {
+                    var data = new Dictionary<string, string> { { "u", user }, { "r", cmbRole.SelectedItem?.ToString() ?? "" } };
+                    File.WriteAllText(rememberPath, System.Text.Json.JsonSerializer.Serialize(data));
+                } else if (File.Exists(rememberPath)) {
+                    File.Delete(rememberPath);
+                }
+
                 Thread.Sleep(800);
 
                 this.Hide();
                 var dashboard = new DashboardForm();
                 dashboard.Show();
-                dashboard.FormClosed += (s, ev) => this.Close(); // Close app when dashboard is closed
+                dashboard.FormClosed += (s, ev) => this.Close(); 
             }
             else
             {
